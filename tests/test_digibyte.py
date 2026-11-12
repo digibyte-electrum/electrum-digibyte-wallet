@@ -26,6 +26,7 @@ def test_digibyte_mainnet_parameters():
     assert net.SEGWIT_HRP == "dgb"
     assert net.BIP44_COIN_TYPE == 20
     assert net.DEFAULT_PORTS == {"t": "50011", "s": "50012"}
+    assert net.DEFAULT_SERVER == "one.electrum-digibyte.org:50011:t"
     assert net.max_checkpoint() == net.BOOTSTRAP_CHECKPOINT_HEIGHT
     assert net.OFFICIAL_CHECKPOINT_SOURCE.endswith('src/kernel/chainparams.cpp')
     assert net.OFFICIAL_CHECKPOINTS[-1] == (
@@ -78,6 +79,16 @@ def test_digibyte_protocol_server_defaults(monkeypatch):
 
     assert constants.DigiByteMainnet.DEFAULT_SERVERS == {
         'electrum-digibyte.ddns.net': {
+            'pruning': '-',
+            't': '50011',
+            'version': '1.4',
+        },
+        'one.electrum-digibyte.org': {
+            'pruning': '-',
+            't': '50011',
+            'version': '1.4',
+        },
+        'two.electrum-digibyte.org': {
             'pruning': '-',
             't': '50011',
             'version': '1.4',

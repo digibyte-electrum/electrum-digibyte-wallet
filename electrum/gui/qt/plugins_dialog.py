@@ -15,6 +15,9 @@ from .util import (WindowModalDialog, Buttons, CloseButton, WWLabel, insert_spac
                    EnterButton, read_QIcon_from_bytes, IconLabel, RunCoroutineDialog, read_QIcon,
                    webopen)
 
+# These Nostr integrations are not exposed as user-installable GUI plugins.
+HIDDEN_PLUGIN_NAMES = frozenset({'nwc', 'psbt_nostr'})
+
 
 if TYPE_CHECKING:
     from . import ElectrumGui
@@ -337,6 +340,8 @@ class PluginsDialog(WindowModalDialog, MessageBoxMixin):
         # populate
         i = 0
         for name, metadata in descriptions:
+            if name in HIDDEN_PLUGIN_NAMES:
+                continue
             i += 1
             if self.plugins.is_internal(name) and self.plugins.is_auto_loaded(name):
                 continue

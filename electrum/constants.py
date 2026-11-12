@@ -78,6 +78,7 @@ class AbstractNet:
     BIP44_COIN_TYPE: int
     LN_REALM_BYTE: int
     DEFAULT_PORTS: Mapping[str, str]
+    DEFAULT_SERVER: Optional[str] = None
     LN_DNS_SEEDS: Sequence[str]
     XPRV_HEADERS: Mapping[str, int]
     XPRV_HEADERS_INV: Mapping[int, str]
@@ -201,6 +202,7 @@ class DigiByteMainnet(AbstractNet):
     BOLT11_HRP = SEGWIT_HRP
     GENESIS = "7497ea1b465eb39f1c8f507bc877078fe016d6fcb6dfad3a64c98dcc6e1e8496"
     DEFAULT_PORTS = {'t': '50011', 's': '50012'}
+    DEFAULT_SERVER = 'one.electrum-digibyte.org:50011:t'
 
     # DigiByte Core publishes these mainnet checkpoints in its official
     # chainparams.cpp.  Verify this source and the complete bootstrap header

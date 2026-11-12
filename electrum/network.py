@@ -726,6 +726,8 @@ class Network(Logger, NetworkRetryManager[ServerAddr]):
             if self.config.NETWORK_ONESERVER:
                 self.logger.warning(f'"oneserver" option enabled, but no "server" defined; falling back to localhost:1:s.')
                 self.default_server = ServerAddr.from_str("localhost:1:s")
+            elif constants.net.DEFAULT_SERVER:
+                self.default_server = ServerAddr.from_str(constants.net.DEFAULT_SERVER)
             else:
                 self.default_server = pick_random_server(allowed_protocols=self._allowed_protocols)
                 if self.default_server is None:
