@@ -9,15 +9,11 @@ Item {
     implicitWidth: balancePane.implicitWidth
     implicitHeight: balancePane.implicitHeight
 
-    property string formattedConfirmedBalance
     property string formattedTotalBalance
     property string formattedTotalBalanceFiat
-    property string formattedLightningBalance
 
     function setBalances() {
-        root.formattedConfirmedBalance = Config.formatSats(Daemon.currentWallet.confirmedBalance)
         root.formattedTotalBalance = Config.formatSats(Daemon.currentWallet.totalBalance)
-        root.formattedLightningBalance = Config.formatSats(Daemon.currentWallet.lightningBalance)
         if (Daemon.fx.enabled) {
             root.formattedTotalBalanceFiat = Daemon.fx.fiatValue(Daemon.currentWallet.totalBalance, false)
         }
@@ -27,6 +23,11 @@ Item {
         id: balancePane
         leftPadding: constants.paddingXLarge
         rightPadding: constants.paddingXLarge
+        // The synchronization message can wrap to several lines.  Reserve
+        // enough vertical space for it so that it does not overflow into the
+        // toolbar above while the wallet is doing its initial sync.
+        implicitHeight: Math.max(balanceLayout.implicitHeight,
+                                 syncProgressLabel.implicitHeight + constants.paddingLarge * 2)
 
         GridLayout {
             id: balanceLayout
@@ -43,7 +44,9 @@ Item {
                 Layout.alignment: Qt.AlignRight
                 font.pixelSize: constants.fontSizeXLarge
                 font.family: FixedFont
-                text: formattedTotalBalance
+                text: Daemon.currentWallet
+                      ? Config.formatSats(Daemon.currentWallet.totalBalance)
+                      : ''
             }
             Label {
                 font.pixelSize: constants.fontSizeXLarge
@@ -70,68 +73,18 @@ Item {
                 text: Daemon.fx.fiatCurrency
             }
 
-            RowLayout {
-                Layout.alignment: Qt.AlignRight
-                visible: Daemon.currentWallet.isLightning
-                Image {
-                    Layout.preferredWidth: constants.iconSizeSmall
-                    Layout.preferredHeight: constants.iconSizeSmall
-                    source: '../../../icons/lightning.png'
-                }
-                Label {
-                    text: qsTr('Lightning') + ':'
-                    font.pixelSize: constants.fontSizeSmall
-                    color: Material.accentColor
-                }
-            }
-            Label {
-                visible: Daemon.currentWallet.isLightning
-                Layout.alignment: Qt.AlignRight
-                text: formattedLightningBalance
-                font.family: FixedFont
-            }
-            Label {
-                visible: Daemon.currentWallet.isLightning
-                font.pixelSize: constants.fontSizeSmall
-                color: Material.accentColor
-                text: Config.baseUnit
-            }
-
-            RowLayout {
-                Layout.alignment: Qt.AlignRight
-                visible: Daemon.currentWallet.isLightning
-                Image {
-                    Layout.preferredWidth: constants.iconSizeSmall
-                    Layout.preferredHeight: constants.iconSizeSmall
-                    source: '../../../icons/digibyte.png'
-                }
-                Label {
-                    text: qsTr('On-chain') + ':'
-                    font.pixelSize: constants.fontSizeSmall
-                    color: Material.accentColor
-                }
-            }
-            Label {
-                id: formattedConfirmedBalanceLabel
-                visible: Daemon.currentWallet.isLightning
-                Layout.alignment: Qt.AlignRight
-                text: formattedConfirmedBalance
-                font.family: FixedFont
-            }
-            Label {
-                visible: Daemon.currentWallet.isLightning
-                font.pixelSize: constants.fontSizeSmall
-                color: Material.accentColor
-                text: Config.baseUnit
-            }
         }
 
     }
 
     Label {
+        id: syncProgressLabel
         opacity: Daemon.currentWallet.synchronizing && Network.isConnected ? 1 : 0
         anchors.centerIn: balancePane
+        width: balancePane.width - constants.paddingLarge * 2
         text: Daemon.currentWallet.synchronizingProgress
+        horizontalAlignment: Text.AlignHCenter
+        wrapMode: Text.WordWrap
         color: Material.accentColor
         font.pixelSize: constants.fontSizeLarge
     }
@@ -177,11 +130,6 @@ Item {
         function onBalanceChanged() {
             setBalances()
         }
-    }
-
-    FontMetrics {
-        id: fontMetrics
-        font: formattedConfirmedBalanceLabel.font
     }
 
     Component.onCompleted: setBalances()

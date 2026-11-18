@@ -203,16 +203,6 @@ Item {
         }
         MenuItem {
             icon.color: action.enabled ? 'transparent' : Material.iconDisabledColor
-            icon.source: '../../icons/lightning.png'
-            action: Action {
-                text: qsTr('Channels');
-                enabled: Daemon.currentWallet.isLightning && app.stack.currentItem.objectName != 'Channels'
-                onTriggered: menu.openPage(Qt.resolvedUrl('Channels.qml'))
-            }
-        }
-
-        MenuItem {
-            icon.color: action.enabled ? 'transparent' : Material.iconDisabledColor
             icon.source: '../../icons/pen.png'
             action: Action {
                 text: Daemon.currentWallet.canSignMessage

@@ -4,6 +4,7 @@ import os
 import tempfile
 import shutil
 from io import StringIO
+from unittest.mock import patch
 
 from electrum.simple_config import SimpleConfig, read_user_config
 
@@ -264,3 +265,17 @@ class TestUserConfig(ElectrumTestCase):
 
         with self.assertRaises(ValueError):
             read_user_config(self.user_dir)
+
+    def test_invalid_android_config_is_backed_up(self):
+        config_path = os.path.join(self.user_dir, "config")
+        with open(config_path, "w", encoding="utf-8") as f:
+            f.write("")
+
+        with patch.dict(os.environ, {"ANDROID_DATA": "/data"}):
+            result = read_user_config(self.user_dir)
+
+        self.assertEqual({}, result)
+        self.assertFalse(os.path.exists(config_path))
+        backups = [name for name in os.listdir(self.user_dir)
+                   if name.startswith("config.corrupt.")]
+        self.assertEqual(1, len(backups))

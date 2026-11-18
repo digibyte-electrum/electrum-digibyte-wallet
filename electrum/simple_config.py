@@ -2,6 +2,7 @@ import json
 import threading
 import os
 import stat
+import time
 from typing import Union, Optional, Dict, Sequence, Any, Set, Callable, AbstractSet, Type
 from functools import cached_property
 
@@ -20,6 +21,12 @@ from .logging import get_logger, Logger
 
 
 _logger = get_logger(__name__)
+
+# DigiByte amounts are normally displayed in whole DGB, while upstream
+# Electrum keeps mBTC as its generic default.  This is a function because the
+# selected network may be set after this module is imported.
+def default_decimal_point(_config: 'SimpleConfig' = None) -> int:
+    return 8 if constants.net.NET_NAME == 'digibyte' else DECIMAL_POINT_DEFAULT
 
 
 FINAL_CONFIG_VERSION = 3
@@ -195,6 +202,8 @@ class SimpleConfig(Logger):
         self.cmdline_options = deepcopy(options)
         # don't allow to be set on CLI:
         self.cmdline_options.pop('config_version', None)
+        if 'ANDROID_DATA' in os.environ:
+            self.set_chain_config_opt_based_on_android_packagename(self.cmdline_options)
 
         # Set self.path and read the user config
         self.user_config = {}  # for self.get in electrum_path()
@@ -220,7 +229,7 @@ class SimpleConfig(Logger):
         try:
             decimal_point_to_base_unit_name(self.BTC_AMOUNTS_DECIMAL_POINT)
         except UnknownBaseUnit:
-            self.BTC_AMOUNTS_DECIMAL_POINT = DECIMAL_POINT_DEFAULT
+            self.BTC_AMOUNTS_DECIMAL_POINT = default_decimal_point(self)
         self.num_zeros = self.BTC_AMOUNTS_FORCE_NZEROS_AFTER_DECIMAL_POINT
         self.amt_precision_post_satoshi = self.BTC_AMOUNTS_PREC_POST_SAT
         self.amt_add_thousands_sep = self.BTC_AMOUNTS_ADD_THOUSANDS_SEP
@@ -242,6 +251,12 @@ class SimpleConfig(Logger):
     def set_chain_config_opt_based_on_android_packagename(cls, config_options: dict[str, Any]) -> None:
         # ~hack for easier testnet builds. pkgname subject to change.
         android_pkg_name = util.get_android_package_name()
+        # The DigiByte Android package uses the project-specific application ID
+        # from buildozer_qml.spec, rather than Electrum's historical package
+        # naming convention.
+        if android_pkg_name == 'org.digibyte.electrum.wallet':
+            config_options['digibyte'] = True
+            return
         for chain in constants.NETS_LIST:
             if android_pkg_name == f"org.electrum.{chain.cli_flag()}.electrum":
                 config_options[chain.cli_flag()] = True
@@ -879,7 +894,7 @@ Warning: setting this to too low will result in lots of payment failures."""),
     GUI_QML_SET_MAX_BRIGHTNESS_ON_QR_DISPLAY = ConfigVar('android_set_max_brightness_on_qr_display', default=True, type_=bool)
     GUI_QML_PAYMENT_AUTHENTICATION = ConfigVar('qml_payment_authentication', default=False, type_=bool)
 
-    BTC_AMOUNTS_DECIMAL_POINT = ConfigVar('decimal_point', default=DECIMAL_POINT_DEFAULT, type_=int)
+    BTC_AMOUNTS_DECIMAL_POINT = ConfigVar('decimal_point', default=default_decimal_point, type_=int)
     BTC_AMOUNTS_FORCE_NZEROS_AFTER_DECIMAL_POINT = ConfigVar(
         'num_zeros', default=0, type_=int,
         short_desc=lambda: _('Zeros after decimal point'),
@@ -1011,5 +1026,20 @@ def read_user_config(path: Optional[str]) -> Dict[str, Any]:
         result = json.loads(data)
         assert isinstance(result, dict), "config file is not a dict"
     except Exception as e:
+        # An interrupted write can leave the config file empty.  On Android,
+        # failing during startup is especially harmful as the fallback Qt GUI
+        # dialog is not included in QML-only builds.  Preserve the bad file and
+        # let the app recreate a valid default config instead.  Wallet files
+        # are stored separately and are deliberately not touched here.
+        if 'ANDROID_DATA' in os.environ:
+            backup_path = f"{config_path}.corrupt.{time.time_ns()}"
+            try:
+                os.replace(config_path, backup_path)
+            except OSError:
+                # Do not hide the original error if the corrupt file cannot be
+                # preserved (e.g. the app data directory became unavailable).
+                raise ValueError(f"Invalid config file at {config_path}: {str(e)}") from e
+            _logger.warning("Invalid Android config moved to %s; using defaults", backup_path)
+            return {}
         raise ValueError(f"Invalid config file at {config_path}: {str(e)}")
     return result

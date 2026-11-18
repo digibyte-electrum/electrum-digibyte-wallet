@@ -460,6 +460,16 @@ class Blockchain(Logger):
             prev_hash = hash_header(header)
             if constants.net.NET_NAME == 'digibyte':
                 history.append(header)
+                # After DigiByte v4, difficulty only needs the recent
+                # timestamp window and a small amount of per-algorithm
+                # history.  Keeping every header in a 2016-header batch
+                # makes next_bits scan an ever-growing list for every
+                # candidate, which is especially expensive on Android.
+                # Periodically compact the context while validating the
+                # batch, just as we do when the batch completes.
+                if (height > 1_430_000 and len(history) > 320
+                        and i % 64 == 63):
+                    history = self._compress_digibyte_context(history)
         if constants.net.NET_NAME == 'digibyte':
             self._digibyte_context = self._compress_digibyte_context(history)
 

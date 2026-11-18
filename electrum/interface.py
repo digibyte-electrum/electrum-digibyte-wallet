@@ -1727,6 +1727,10 @@ class Interface(Logger):
                 res = -1
             else:
                 raise
+        except RequestTimedOut:
+            # Fee estimation is auxiliary.  A temporarily unavailable server
+            # must not leave an unhandled task exception in the network loop.
+            res = -1
         # check response
         if res != -1:
             assert_non_negative_int_or_float(res)

@@ -177,7 +177,7 @@ ApplicationWindow
                             Layout.preferredHeight: constants.iconSizeSmall
                             visible: Daemon.currentWallet &&
                                 (!stack.currentItem || !stack.currentItem.title || stack.currentItem.title == Daemon.currentWallet.name)
-                            source: '../../icons/wallet.png'
+                            source: '../../icons/electrum.png'
                         }
 
                         Label {
@@ -235,23 +235,11 @@ ApplicationWindow
                             }
                         }
 
-                        LightningNetworkStatusIndicator {
-                            id: lnnsi
-                        }
                         OnchainNetworkStatusIndicator { }
                     }
                 }
             }
 
-            // hack to force relayout of toolbar
-            // since qt6 LightningNetworkStatusIndicator.visible doesn't trigger relayout(?)
-            Item {
-                Layout.preferredHeight: 1
-                Layout.topMargin: -1
-                Layout.preferredWidth: lnnsi.visible
-                    ? 1
-                    : 2
-            }
         }
     }
 

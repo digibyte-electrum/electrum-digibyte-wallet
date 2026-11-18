@@ -1,17 +1,12 @@
 {
-    "electrum-digibyte.ddns.net": {
+    "one.electrum-digibyte.org": {
         "pruning": "-",
         "t": "50011",
         "version": "1.4"
-	},
-	"one.electrum-digibyte.org": {
-		"pruning": "-",
-		"t": "50011",
-		"version": "1.4"
-	},
-	"two.electrum-digibyte.org": {
-		"pruning": "-",
-		"t": "50011",
-		"version": "1.4"
+    },
+    "two.electrum-digibyte.org": {
+        "pruning": "-",
+        "t": "50011",
+        "version": "1.4"
     }
 }

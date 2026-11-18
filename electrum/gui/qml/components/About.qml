@@ -68,20 +68,18 @@ Pane {
                 text: qsTr('MIT License')
             }
             Label {
-                text: qsTr('Homepage')
-                Layout.alignment: Qt.AlignRight
-            }
-            Label {
-                text: '<a href="https://electrum.org">https://electrum.org</a>'
+                text: '<a href="https://electrum-digibyte.org">https://electrum-digibyte.org</a>'
                 textFormat: Text.RichText
+                Layout.columnSpan: 2
+                Layout.alignment: Qt.AlignHCenter
                 onLinkActivated: Qt.openUrlExternally(link)
             }
             Label {
-                text: qsTr('Developers')
+                text: qsTr('Developer')
                 Layout.alignment: Qt.AlignRight
             }
             Label {
-                text: 'Thomas Voegtlin\nSomberNight\nSander van Grieken\nFelix B.'
+                text: 'Rarigita'
             }
             Item {
                 width: 1
@@ -89,7 +87,7 @@ Pane {
                 Layout.columnSpan: 2
             }
             Label {
-                text: qsTr('Distributed by Electrum Technologies GmbH')
+                text: qsTr('Distributed by Electrum Digibyte Org')
                 Layout.columnSpan: 2
                 Layout.alignment: Qt.AlignHCenter
             }

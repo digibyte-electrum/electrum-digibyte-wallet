@@ -302,9 +302,15 @@ class QEWallet(AuthMixin, QObject, QtEventListener):
 
     def update_sync_progress(self):
         if self.wallet.network and self.wallet.network.is_connected():
-            num_sent, num_answered = self.wallet.adb.get_history_sync_state_details()
-            self.synchronizingProgress = \
-                ("{} ({}/{})".format(_("Synchronizing..."), num_answered, num_sent))
+            local_height = self.wallet.network.get_local_height()
+            server_height = self.wallet.network.get_server_height()
+            if server_height > 0:
+                percentage = min(100.0, max(0.0, local_height * 100.0 / server_height))
+                self.synchronizingProgress = _(
+                    "Synchronizing headers...\n{} / {} blocks ({:.2f}%)"
+                ).format(local_height, server_height, percentage)
+            else:
+                self.synchronizingProgress = _("Synchronizing headers...")
 
     historyModelChanged = pyqtSignal()
     @pyqtProperty(QETransactionListModel, notify=historyModelChanged)
