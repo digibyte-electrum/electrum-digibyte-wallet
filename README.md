@@ -6,10 +6,10 @@ This repository is the DigiByte client based on Electrum. It is being built
 incrementally and keeps the upstream Electrum sources available through the
 `upstream` Git remote.
 
-## Current milestone — 2026-10-30
+## Current milestone — 2026-11-23
 
-`DGB-ELECTRUM-TEST-RELEASE-6` — native DigiByte PoW support in the Android
-package and the latest cross-platform test release.
+`DGB-ELECTRUM-RELEASE-PRE3-COMPLETE` — Android wallet improvements and the
+current signed cross-platform release.
 
 Completed so far:
 
@@ -25,8 +25,16 @@ Completed so far:
 - The Linux AppImage bundles the native DigiByte PoW validator and is
   published together with the Android APK, Windows executable, portable, and
   NSIS installer artifacts in the
-  [dgb-v4.8.2-test6 release](https://github.com/digibyte-electrum/electrum-digibyte/releases/tag/dgb-v4.8.2-test6).
-- The Android ARM64 APK now bundles `libdigibytepow.so`; the Android
+  [dgb-v4.8.2-pre3 release](https://github.com/digibyte-electrum/electrum-digibyte-wallet/releases/tag/dgb-v4.8.2-pre3).
+- Android now defaults to DGB as the base unit, displays the wallet total in
+  the balance view, and removes the unused Lightning Liquidity summary from
+  the on-chain balance screen.
+- Android initial synchronization was tested to completion and remained stable
+  across restarts. The release includes signed `arm64-v8a`, `armeabi-v7a`, and
+  `x86_64` APKs; debug and `release-unsigned` packages are excluded.
+- Spanish payment-confirmation translations were corrected through the PO/MO
+  catalogs, including placeholder-safe translations for the amount and fee.
+- The Android ARM64 APK bundles `libdigibytepow.so`; the Android
   python-for-android recipe is pinned to the DigiByte Core source used for the
   desktop native validator.
 - DigiByte mainnet parameters and address prefixes are defined.
@@ -91,6 +99,21 @@ Electrum and is not presented as an official DigiByte release.
 - The release is available from the
   [dgb-v4.8.2-test4 GitHub release](https://github.com/digibyte-electrum/electrum-digibyte/releases/tag/dgb-v4.8.2-test4).
 
+### 2026-11-23 — Pre3 release and Android wallet improvements
+
+- Published the current signed release as
+  [dgb-v4.8.2-pre3](https://github.com/digibyte-electrum/electrum-digibyte-wallet/releases/tag/dgb-v4.8.2-pre3).
+- Signed and published Android release APKs for `arm64-v8a`, `armeabi-v7a`,
+  and `x86_64`; debug and unsigned APKs are not included in the release.
+- Android defaults to DGB, shows the total wallet balance, and keeps the
+  initial header synchronization stable through completion.
+- Corrected Spanish payment-confirmation translations and the formatting of
+  their placeholders in the PO/MO catalogs.
+- Rebuilt the Linux AppImage and the Windows executable, portable, and NSIS
+  installer artifacts. The `latest` tag points to this release commit.
+- Published detached GPG signatures and SHA-256 checksums for all public
+  release artifacts.
+
 ### 2026-10-30 — Test6 release and Android native PoW packaging
 
 - Added a pinned python-for-android recipe that compiles the DigiByte PoW
@@ -144,8 +167,8 @@ Electrum and is not presented as an official DigiByte release.
 - Large DigiByte UTXOs now use a readable fallback identifier when the compact
   ShortID format cannot represent their height.
 
-The current test artifacts are available from the
-[dgb-v4.8.2-test6 GitHub release](https://github.com/digibyte-electrum/electrum-digibyte/releases/tag/dgb-v4.8.2-test6).
+The current artifacts are available from the
+[dgb-v4.8.2-pre3 GitHub release](https://github.com/digibyte-electrum/electrum-digibyte-wallet/releases/tag/dgb-v4.8.2-pre3).
 
 ## Building the DigiByte wallet stack
 
@@ -472,6 +495,14 @@ Update this section as the client implementation advances:
   origin and marked as the latest GitHub release, with Android ARM64, Linux
   AppImage, and Windows executable, portable, and NSIS installer artifacts
   available from the [GitHub release](https://github.com/digibyte-electrum/electrum-digibyte/releases/tag/dgb-v4.8.2-test6).
+- [x] Pre3 release published (2026-11-23): tag `dgb-v4.8.2-pre3` and `latest`
+  pushed, with signed Android release APKs for ARM64, ARMv7, and x86_64,
+  Linux AppImage, Windows artifacts, detached GPG signatures, and SHA-256
+  checksums available from the
+  [GitHub release](https://github.com/digibyte-electrum/electrum-digibyte-wallet/releases/tag/dgb-v4.8.2-pre3).
+- [x] Android wallet UI and localization improvements: DGB as the default unit,
+  total balance display, removal of the unused Lightning Liquidity summary,
+  stable initial synchronization, and corrected Spanish payment strings.
 - [x] Test4 release published (2026-10-30): tag `dgb-v4.8.2-test4` pushed to
   `origin/digi`, with Linux AppImage and Windows executable, portable, and NSIS
   installer artifacts available from the [GitHub release](https://github.com/digibyte-electrum/electrum-digibyte/releases/tag/dgb-v4.8.2-test4).
@@ -495,7 +526,7 @@ Update this section as the client implementation advances:
 - [x] Ubuntu 26 desktop integration, DigiByte launcher/icon installation, and
   Wayland dock identity.
 - [x] Build and publish versioned Linux and Windows artifacts in the
-  [dgb-v4.8.2-test4 release](https://github.com/digibyte-electrum/electrum-digibyte/releases/tag/dgb-v4.8.2-test4).
+  [dgb-v4.8.2-pre3 release](https://github.com/digibyte-electrum/electrum-digibyte-wallet/releases/tag/dgb-v4.8.2-pre3).
 
 ---
 
@@ -526,7 +557,7 @@ The output is written to `contrib/build-wine/dist/` as versioned files such as
 `electrum-digibyte-4.8.2-setup.exe`. See
 [`contrib/build-wine/README.md`](contrib/build-wine/README.md) for Docker
 installation and reproducible-build details. Prebuilt test artifacts are
-available in the [current DigiByte release](https://github.com/digibyte-electrum/electrum-digibyte/releases/tag/dgb-v4.8.2-test4).
+available in the [current DigiByte release](https://github.com/digibyte-electrum/electrum-digibyte-wallet/releases/tag/dgb-v4.8.2-pre3).
 
 ### Building the AppImage from source
 
